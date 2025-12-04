@@ -15,6 +15,7 @@ venv.bak/
 # === VS Code ===
 .vscode/
 *.code-workspace
+.history/
 
 # === Fichiers de build / dist ===
 build/
@@ -39,4 +40,5 @@ htmlcov/
 .DS_Store
 Thumbs.db
 *.log
+
 
