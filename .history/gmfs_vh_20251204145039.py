@@ -165,14 +165,12 @@ def gmf_rcm_noaa(incidence, speed, phi=None):
     a_Z2 = a0_Z2 + a1_Z2 * incidence + a2_Z2 * incidence**2
     b_Z2 = b0_Z2 + b1_Z2 * incidence + b2_Z2 * incidence**2
     sig_Z2 = a_Z2 * speed ** (b_Z2)
-
     c0, c1 = Final_p[0], Final_p[1]
     c2, c3 = Final_p[2], Final_p[3]
     sigmoid_Z1 = 1 / (1 + np.exp(-c0 * (speed - c1)))
     sigmoid_Z2 = 1 / (1 + np.exp(-c2 * (speed - c3)))
     sig_Final = sig_Z1 * sigmoid_Z1 + sig_Z2 * sigmoid_Z2
     return sig_Final
-
 
 def gmf_s1_v3_ew_rec(incidence, speed, phi=None):
     """

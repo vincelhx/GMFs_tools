@@ -109,71 +109,6 @@ def gmf_s1_v2(incidence, speed, phi=None):
     return sig_Final
 
 
-def gmf_rcm_noaa(incidence, speed, phi=None):
-    """
-    Radarsat Consteallation Mission VH GMF : relation between sigma0, incidence and windspeed.
-    From NOAA, named gmf_rcm_v1.
-    Parameters
-    ----------
-    incidence: xarray.DataArray
-        incidence angle [deg]
-    speed: xarray.DataArray
-        wind speed [m/s]
-
-    Returns
-    -------
-    sigma0: xarray.DataArray
-        linear sigma0
-
-    """
-    # constants params
-
-    Z1_p = np.array(
-        [2.2309436836414871e-12, 8.3374911282878728, -0.033443488982800210])
-    Z2_p = np.array(
-        [
-            7.7945050373193260e-05,
-            -2.4425748662769216e-06,
-            2.7625550632547159e-08,
-            1.2524896108831316,
-            0.019203092214131894,
-            -0.00028408046502692580,
-        ]
-    )
-    Final_p = np.array(
-        [-0.34498737004629487, 12.558975188752012,
-            0.12713502524515713, 4.2806865431046752]
-    )
-
-    # Z1
-    a0_Z1 = Z1_p[0]
-    b0_Z1 = Z1_p[1]
-    b1_Z1 = Z1_p[2]
-
-    a_Z1 = a0_Z1
-    b_Z1 = b0_Z1 + b1_Z1 * incidence
-    sig_Z1 = a_Z1 * speed ** (b_Z1)
-
-    # Z2
-    a0_Z2 = Z2_p[0]
-    a1_Z2 = Z2_p[1]
-    a2_Z2 = Z2_p[2]
-    b0_Z2 = Z2_p[3]
-    b1_Z2 = Z2_p[4]
-    b2_Z2 = Z2_p[5]
-
-    a_Z2 = a0_Z2 + a1_Z2 * incidence + a2_Z2 * incidence**2
-    b_Z2 = b0_Z2 + b1_Z2 * incidence + b2_Z2 * incidence**2
-    sig_Z2 = a_Z2 * speed ** (b_Z2)
-
-    c0, c1 = Final_p[0], Final_p[1]
-    c2, c3 = Final_p[2], Final_p[3]
-    sigmoid_Z1 = 1 / (1 + np.exp(-c0 * (speed - c1)))
-    sigmoid_Z2 = 1 / (1 + np.exp(-c2 * (speed - c3)))
-    sig_Final = sig_Z1 * sigmoid_Z1 + sig_Z2 * sigmoid_Z2
-    return sig_Final
-
-
 def gmf_s1_v3_ew_rec(incidence, speed, phi=None):
     """
     Sentinel-1 VH GMF : relation between sigma0, incidence and windspeed.
@@ -211,6 +146,7 @@ def gmf_s1_v3_ew_rec(incidence, speed, phi=None):
     return 10**((10 * np.log10(sig_Z1) * sigmoid1 + 10 * np.log10(sig_Z2) * sigmoid2) / 10)
 
 
+@GmfModel.(wspd_range=[3.0, 80.0], pol="VH", units="linear", defer=False)
 def gmf_rcm_v4(incidence, speed, phi=None):
     """
     Radarsat Consteallation Mission VH GMF : relation between sigma0, incidence and windspeed.
